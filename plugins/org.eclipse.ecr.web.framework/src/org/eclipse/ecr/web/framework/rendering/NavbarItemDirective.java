@@ -27,31 +27,44 @@ public class NavbarItemDirective implements TemplateDirectiveModel {
 
 	@SuppressWarnings({ "rawtypes" })
 	@Override
-	public void execute(Environment env, final Map params, TemplateModel[] loopVars,
-			TemplateDirectiveBody body) throws TemplateException, IOException {
-		
+	public void execute(Environment env, final Map params,
+			TemplateModel[] loopVars, TemplateDirectiveBody body)
+			throws TemplateException, IOException {
+
 		NavbarDirective.NavbarWriter writer;
 		try {
-			writer = (NavbarDirective.NavbarWriter)env.getOut();
+			writer = (NavbarDirective.NavbarWriter) env.getOut();
 		} catch (ClassCastException e) {
-			throw new TemplateException("navbar items must be used inside @navbar directive", env);
+			throw new TemplateException(
+					"navbar items must be used inside @navbar directive", env);
 		}
 
 		String name = null;
-        SimpleScalar scalar = (SimpleScalar) params.get("id");
-        if (scalar != null) {
-            name = scalar.getAsString();
-        }
-		
+		SimpleScalar scalar = (SimpleScalar) params.get("id");
+		if (scalar != null) {
+			name = scalar.getAsString();
+		}
+
+		String className = null;
+		scalar = (SimpleScalar) params.get("class");
+		if (scalar != null) {
+			className = scalar.getAsString();
+		}
+
 		writer.start("li");
 		if (writer.active.equals(name)) {
+			className = className == null ? writer.activeClass
+					: new StringBuilder().append(className).append(" ")
+							.append(writer.activeClass).toString();
 			writer.attr("class", writer.activeClass);
+		} else if (className != null) {
+			writer.attr("class", className);
 		}
 		writer.etag();
-        if (body != null) {        	
-        	body.render(writer);
-        }		
+		if (body != null) {
+			body.render(writer);
+		}
 		writer.end("li");
 	}
-	
+
 }

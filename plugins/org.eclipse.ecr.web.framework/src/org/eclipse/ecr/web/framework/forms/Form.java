@@ -18,7 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.logging.Log;
@@ -45,7 +46,7 @@ public class Form {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Form newForm(ServletRequest request) {
+	public static Form newForm(HttpServletRequest request) {
 		FormData data = new FormData();
 		Map<String, String[]> map = (Map<String, String[]>)request.getParameterMap();
 		for (Map.Entry<String, String[]> entry : map.entrySet()) {
@@ -58,6 +59,30 @@ public class Form {
 		return Form.newForm(data);		
 	}
 
+	/**
+	 * Get the form that was persisted in the session or a new instance given the form ID if none was persisted.
+	 * This should be used to get the form after an error or a fresh one if no error was recorded before a redirect.
+	 * <p>
+	 * If the form was persisted then it will be removed from the session.
+	 * <p>
+	 * You can check if the form was persisted because of a previous error by calling {@link #hasErrors()}.
+	 * If this method return false it means the form is fresh and you may initialize it. 
+	 * @param request
+	 * @param id
+	 * @return
+	 */
+	public static Form newForm(HttpServletRequest request, String id) {
+		String key = Form.class.getName()+"#"+id;
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			Form form = (Form)session.getAttribute(key);
+			if (form != null) {
+				form.unpersist(request);
+				return form;
+			}
+		}
+		return newForm(id);
+	}
 	
 	protected FormService service;
 	
@@ -158,4 +183,23 @@ public class Form {
 		return errors;
 	}
 	
+	/**
+	 * Persist the form in the HTTP session.
+	 * This can be done when a form validation is failing to be able to reload the form with errors
+	 * after the redirect
+	 */
+	public void persist(HttpServletRequest request) {
+		HttpSession session = request.getSession(true);
+		session.setAttribute(Form.class.getName()+"#"+getId(), this);
+	}
+	
+	/**
+	 * Remove this form from the session if was persisted.
+	 */
+	public void unpersist(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.removeAttribute(Form.class.getName()+"#"+getId());
+		}
+	}
 }

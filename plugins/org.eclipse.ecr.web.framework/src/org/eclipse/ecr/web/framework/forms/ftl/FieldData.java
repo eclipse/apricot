@@ -56,16 +56,16 @@ public class FieldData {
 			IOException {
 		writer.start("div");
 		if (error != null) {
-			writer.attr("class", "clearfix error").etag();			
+			writer.attr("class", "control-group error").etag();			
 		} else {
-			writer.attr("class", "clearfix").etag();
+			writer.attr("class", "control-group").etag();
 		}
-		writer.start("label").attr("for", name).etag().print(label);
+		writer.start("label").attr("class", "control-label").attr("for", name).etag().print(label);
 		if (help != null) {
 			printHelp(writer);
 		}
 		writer.end("label");
-		writer.start("div").attr("class", "input").etag();		
+		writer.start("div").attr("class", "controls").etag();
 	}
 
 	public void writeEndField(FormWriter writer) throws TemplateException,

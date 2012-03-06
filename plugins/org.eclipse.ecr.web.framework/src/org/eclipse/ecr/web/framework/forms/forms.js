@@ -39,22 +39,22 @@ function Form(selector) {
 
   this.addError = function(field, message) {
     var fobj = $(field);
-    fobj.closest("div.clearfix").addClass("error");
-    fobj.closest("div.input").append("<span class=\"error help-block\">"+message+"</span>");
+    fobj.closest("div.control-group").addClass("error");
+    fobj.closest("div.controls").append("<span class=\"error help-block\">"+message+"</span>");
     
   }
 
   this.removeError = function(field) {
     var fobj = $(field);
-    var div = fobj.closest("div.clearfix");
+    var div = fobj.closest("div.control-group");
     if (div.hasClass("error")) {
       div.removeClass("error");
-      fobj.closest("div.input").children("span.error").remove();
+      fobj.closest("div.controls").children("span.error").remove();
     }
   }
 
   this.hasError = function(field) {
-    return fobj.closest("div.clearfix").hasClass("error");
+    return fobj.closest("div.control-group").hasClass("error");
   }
 
   this.clearErrors = function() {

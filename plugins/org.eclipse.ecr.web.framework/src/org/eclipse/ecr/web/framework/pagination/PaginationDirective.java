@@ -82,14 +82,14 @@ public class PaginationDirective implements TemplateDirectiveModel {
         if (scalar != null) {
             pag.next = scalar.getAsString();
         } else {
-        	pag.next = "Next &rarr;";        	
+        	pag.next = "&raquo;";
         }
 
         scalar = (SimpleScalar) params.get("prev");
         if (scalar != null) {
             pag.prev = scalar.getAsString();
         } else {
-        	pag.prev = "&larr; Previous";
+        	pag.prev = "&laquo;";
         }
 
         pag.compute();

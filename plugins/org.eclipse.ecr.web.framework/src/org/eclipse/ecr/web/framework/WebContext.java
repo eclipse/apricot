@@ -212,6 +212,11 @@ public class WebContext {
 		return request.getParameter(key);
 	}
 
+	public String getParameter(String key, String defValue) {
+		String v = request.getParameter(key);
+		return v == null ? defValue : v;
+	}
+
 	public String[] getParameters(String key) {
 		return request.getParameterValues(key);
 	}
