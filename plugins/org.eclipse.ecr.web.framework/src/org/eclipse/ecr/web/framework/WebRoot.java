@@ -13,7 +13,10 @@
 
 package org.eclipse.ecr.web.framework;
 
+import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -76,25 +79,32 @@ public abstract class WebRoot extends AdaptableResource {
 
     @GET
     @Path("skin/{path:.*}")
-    public Response getSkinResource(@PathParam("path") String path) {
+    public Response getSkinResource(@PathParam("path") String path) throws IOException {
     	URL url = getApplication().resolve("resources/"+path);
     	String mimeType = null;
     	if (url != null) {
+    		URLConnection conn = url.openConnection();
     		int x = url.getPath().lastIndexOf('.');
     		if (x > -1) {
     			mimeType = Framework.getLocalService(WebFramework.class).getMimeType(url.getPath(), "text/plain");
     		}
-    		ResponseBuilder resp = Response.ok(url);
-    		//                long lastModified = url.lastModified();
-    		//                .lastModified(
-    		//                        new Date(lastModified)).header("Cache-Control",
-    		//                        "public");
-
+    		ResponseBuilder resp = Response.ok(conn);
+    		addCacheHeaders(resp, conn, path);
     		resp.type(mimeType);
     		return resp.build();
     	}
-    	
         return Response.status(404).build();
+    }
+    
+    /**
+     * Override to control cache headers. By default for all skin resources 
+     * a Cache-Control: public, Expires of one month and lastModified header is used.
+     */
+    protected void addCacheHeaders(ResponseBuilder resp, URLConnection conn, String path) throws IOException {
+    	final Date afterOneMonth = new Date(System.currentTimeMillis()+2678400000L);
+    	long lastModified = conn.getLastModified();
+    	resp.lastModified(new Date(lastModified)).header("Cache-Control",
+    					"public").expires(afterOneMonth);
     }
 
 }

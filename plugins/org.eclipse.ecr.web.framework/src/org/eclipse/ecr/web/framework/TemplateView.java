@@ -15,7 +15,6 @@ package org.eclipse.ecr.web.framework;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,8 +59,10 @@ public class TemplateView implements View {
 	@Override
 	public void render(Writer out) throws Exception {
 		target.initBindings(args);
+		//double s = System.currentTimeMillis();
         target.getApplication().getRenderingEngine().render(
                 viewId, args, out);
+        //System.out.println(">>>>>>>>>>>>> Rendering took: "+((double)System.currentTimeMillis()-s)/1000);
         out.flush();
 	}
 

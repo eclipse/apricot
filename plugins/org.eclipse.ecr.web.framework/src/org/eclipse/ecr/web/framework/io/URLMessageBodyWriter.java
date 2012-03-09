@@ -55,7 +55,7 @@ public class URLMessageBodyWriter implements MessageBodyWriter<URL> {
         	}
         } catch (Throwable e) {
             log.error("Failed to get resource: " + t, e);
-            throw new IOException("Failed to get resource", e);
+            throw new IOException("Failed to get resource: "+ t, e);
         }
     }
 

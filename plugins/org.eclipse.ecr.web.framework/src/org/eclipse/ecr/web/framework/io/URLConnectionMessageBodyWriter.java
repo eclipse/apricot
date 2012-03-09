@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.net.URLConnection;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -23,42 +24,51 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.ecr.web.framework.View;
+import org.eclipse.ecr.common.utils.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * 
  */
 @Provider
-public class ViewMessageBodyWriter implements MessageBodyWriter<View> {
+public class URLConnectionMessageBodyWriter implements MessageBodyWriter<URLConnection> {
 
-    private static final Log log = LogFactory.getLog(ViewMessageBodyWriter.class);
+    private static final Log log = LogFactory.getLog(URLConnectionMessageBodyWriter.class);
 
     // @ResourceContext private HttpServletRequest request;
 
     @Override
-    public void writeTo(View t, Class<?> type, Type genericType,
+    public void writeTo(URLConnection conn, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         try {
-            t.render(entityStream);
+        	java.io.InputStream in = conn.getInputStream();
+        	try {
+        		FileUtils.copy(in, entityStream);
+        	} finally {
+        		try {
+        			entityStream.flush();
+        		} finally {
+        			in.close();
+        		}
+        	}
         } catch (Throwable e) {
-            log.error("Failed to render view: " + t, e);
-            throw new IOException("Failed to render view: " + t, e);
+            log.error("Failed to get resource: " + conn.getURL(), e);
+            throw new IOException("Failed to get resource: " + conn.getURL(), e);
         }
     }
 
     @Override
-    public long getSize(View arg0, Class<?> arg1, Type arg2, Annotation[] arg3,
+    public long getSize(URLConnection conn, Class<?> arg1, Type arg2, Annotation[] arg3,
             MediaType arg4) {
-        return -1;
+        return conn.getContentLength();
     }
 
     @Override
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
             MediaType arg3) {
-        return View.class.isAssignableFrom(arg0);
+        return URLConnection.class.isAssignableFrom(arg0);
     }
 
 }

@@ -16,6 +16,7 @@ package org.eclipse.ecr.web.framework.pagination;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.ecr.common.utils.StringUtils;
 import org.eclipse.ecr.web.framework.HTMLWriter;
 
 import freemarker.core.Environment;
@@ -92,6 +93,21 @@ public class PaginationDirective implements TemplateDirectiveModel {
         	pag.prev = "&laquo;";
         }
 
+        scalar = (SimpleScalar) params.get("limits");        
+        if (scalar != null) {
+        	String v = scalar.getAsString().trim();
+        	if (v.length() != 0) {
+        		String[] ar = StringUtils.split(v, ',', true);
+        		pag.limits = new int[ar.length];
+        		for (int i=0; i<ar.length; i++) {
+        			pag.limits[i] = Integer.parseInt(ar[i]);
+        		}
+        	}
+        }
+        if (pag.limits == null) {
+        	pag.limits = new int[] {15, 30, 50};
+        }
+
         pag.compute();
         
         if (pag.pageCount <= 1) {
@@ -100,6 +116,11 @@ public class PaginationDirective implements TemplateDirectiveModel {
         
         HTMLWriter writer = new HTMLWriter(env.getOut());
 		try {
+			writer.println("<div class=\"pagination\" style=\"float:right\">");
+			for (int i=0; i<pag.limits.length; i++) {
+				writeLimitChoice(writer, pag, pag.limits[i]);
+			}
+			writer.println("</div>");
 			writer.println("<div class=\"pagination\">").println("<ul>");
 			//write prev
 			writePrevious(writer, pag);
@@ -170,6 +191,14 @@ public class PaginationDirective implements TemplateDirectiveModel {
 		writer.println("<li class=\"disabled\"><a href=\"#\">...</a></li>");		
 	}
 
+	private void writeLimitChoice(HTMLWriter writer, Pagination pag, int limit) throws IOException {
+		writer.print("<li");
+		if (pag.limit == limit) {
+			writer.print(" class=\"active\"");	
+		}
+		writer.print("><a href=\"").print(pag.getResetHref(limit)).print("\">");
+		writer.print(Integer.toString(limit)).println("</a></li>");
+	}
 	
 	static class Pagination {
 		long offset;
@@ -187,6 +216,8 @@ public class PaginationDirective implements TemplateDirectiveModel {
 		String next;
 		String prev;
 		String href;
+		
+		int[] limits;
 		
 		
 		final void compute() {
@@ -212,6 +243,10 @@ public class PaginationDirective implements TemplateDirectiveModel {
 
 		final String getHref(long index) {
 			return String.format(href, limit*(index-1), limit);
+		}
+		
+		final String getResetHref(int limit) {
+			return String.format(href, 0, limit);
 		}
 	}
 	
