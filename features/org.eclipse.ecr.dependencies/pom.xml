@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.eclipse.ecr.features</groupId>
-  <artifactId>org.eclipse.ecr.dependency</artifactId>
+  <artifactId>org.eclipse.ecr.dependencies</artifactId>
   <name>Eclipse ECR Dependencies Feature</name>
   <packaging>eclipse-feature</packaging>
 

@@ -84,7 +84,7 @@
   </scm>
 
   <properties>
-    <tycho-version>0.10.0</tycho-version>
+    <tycho-version>0.14.0</tycho-version>
     <orbit-version>current</orbit-version>
     <eclipse-version>current</eclipse-version>
     <nuxeo-version>current</nuxeo-version>
@@ -140,13 +140,13 @@
   <build>
     <plugins>
       <plugin>
-	<groupId>org.sonatype.tycho</groupId>
+	<groupId>org.eclipse.tycho</groupId>
 	<artifactId>tycho-maven-plugin</artifactId>
 	<version>${tycho-version}</version>
 	<extensions>true</extensions>
       </plugin>
       <plugin>
-	<groupId>org.sonatype.tycho</groupId>
+	<groupId>org.eclipse.tycho</groupId>
 	<artifactId>target-platform-configuration</artifactId>
 	<version>${tycho-version}</version>
 	<configuration>
@@ -193,16 +193,16 @@
 	</configuration>
       </plugin>
       <plugin>
-	<groupId>org.sonatype.tycho</groupId>
-	<artifactId>maven-osgi-packaging-plugin</artifactId>
+	<groupId>org.eclipse.tycho</groupId>
+	<artifactId>tycho-packaging-plugin</artifactId>
 	<version>${tycho-version}</version>
 	<configuration>
 	  <archiveSite>true</archiveSite>
 	</configuration>
       </plugin>
       <plugin>
-	<groupId>org.sonatype.tycho</groupId>
-	<artifactId>maven-osgi-source-plugin</artifactId>
+	<groupId>org.eclipse.tycho</groupId>
+	<artifactId>tycho-source-plugin</artifactId>
 	<version>${tycho-version}</version>
 	<executions>
 	  <execution>
@@ -215,7 +215,7 @@
       </plugin>
       <plugin>
 	<inherited>true</inherited>
-	<groupId>org.sonatype.tycho</groupId>
+	<groupId>org.eclipse.tycho</groupId>
 	<artifactId>tycho-p2-publisher-plugin</artifactId>
 	<version>${tycho-version}</version>
 	<configuration>
@@ -223,7 +223,7 @@
 	</configuration>
       </plugin>
       <plugin>
-	<groupId>org.sonatype.tycho</groupId>
+	<groupId>org.eclipse.tycho</groupId>
 	<artifactId>tycho-p2-director-plugin</artifactId>
 	<version>${tycho-version}</version>
       </plugin>
