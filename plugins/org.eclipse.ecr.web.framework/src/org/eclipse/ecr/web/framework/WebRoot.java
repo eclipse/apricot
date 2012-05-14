@@ -35,18 +35,27 @@ import org.eclipse.ecr.runtime.api.Framework;
  *
  */
 public abstract class WebRoot extends AdaptableResource {
+	
+	public static final String X_ECR_BASE_URL = "X-ECR-BaseUrl";
+	public static final String X_ECR_ROOT_URL = "X-ECR-RootUrl";
 
 	protected WebRoot() {
 		this (WebApplication.DEFAULT_APP_NAME);
 	}
 	
 	protected WebRoot(String appName) {
-		super (new WebContext());
-		this.ctx.app = Framework.getLocalService(WebFramework.class).getApplication(appName);
+		super (new WebContext(appName));
+	}
+
+	protected WebRoot(WebContext ctx) {
+		super (ctx);
 	}
 
 	@Context public void setRequest(HttpServletRequest request) {
-		ctx.setRequest(request);
+		ctx.setRequest(request);		
+		if (ctx.uriInfo != null) {
+			initContextPaths();
+		}
 	}
 
 	@Context public void setResponse(HttpServletResponse response) {
@@ -55,23 +64,23 @@ public abstract class WebRoot extends AdaptableResource {
 
 	@Context public void setUriInfo(UriInfo uriInfo) {
 		ctx.setUriInfo(uriInfo);
-		ctx.setContextPath(computeContextPath(uriInfo));
-		initPath(uriInfo);
+		if (ctx.request != null) {
+			initContextPaths();
+		}
+	}
+	
+	protected void initContextPaths() {
+		ctx.init(this, PathResolver.create(ctx.getRequest(), 
+				getClass().getAnnotation(Path.class).value(), 
+				"/skin", X_ECR_ROOT_URL, X_ECR_BASE_URL));
+		initPath();
 	}
 	
 	@Override
-	protected void initContext(WebContext ctx) { //TODO		
-		super.initContext(ctx);
+	protected void initContext(WebContext ctx) {		
+		this.ctx = ctx;
 	}
 	
-	/**
-	 * TODO: Override to add proxy path rewrite support
-	 * @param uriInfo
-	 * @return
-	 */
-	protected String computeContextPath(UriInfo uriInfo) {		
-		return uriInfo.getBaseUri().getPath();
-	}
 	
 	public Object handleError() {
 		return null; //TODO

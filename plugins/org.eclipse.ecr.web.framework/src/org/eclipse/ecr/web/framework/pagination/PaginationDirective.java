@@ -116,11 +116,7 @@ public class PaginationDirective implements TemplateDirectiveModel {
         
         HTMLWriter writer = new HTMLWriter(env.getOut());
 		try {
-			writer.println("<div class=\"pagination\" style=\"float:right\">");
-			for (int i=0; i<pag.limits.length; i++) {
-				writeLimitChoice(writer, pag, pag.limits[i]);
-			}
-			writer.println("</div>");
+			writer.println("<table width='100%'><tr><td>");
 			writer.println("<div class=\"pagination\">").println("<ul>");
 			//write prev
 			writePrevious(writer, pag);
@@ -155,6 +151,16 @@ public class PaginationDirective implements TemplateDirectiveModel {
 			// write next
 			writeNext(writer, pag);
 			writer.println("</ul>").println("</div>");
+			
+			writer.println("</td><td align='right'>");
+			
+			writer.println("<div class=\"pagination\">").println("<ul>");
+			for (int i=0; i<pag.limits.length; i++) {
+				writeLimitChoice(writer, pag, pag.limits[i]);
+			}
+			writer.println("<ul>").println("</div>");
+
+			writer.println("</td></tr></table>");
 		} finally {
 			writer.flush();
 		}
